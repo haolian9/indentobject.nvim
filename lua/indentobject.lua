@@ -6,7 +6,7 @@
 local cthulhu = require("cthulhu")
 local vsel = require("infra.vsel")
 local jelly = require("infra.jellyfish")("indentobject", vim.log.levels.DEBUG)
-local nvimkeys = require("infra.nvimkeys")
+local jumplist = require("infra.jumplist")
 
 local api = vim.api
 
@@ -15,7 +15,7 @@ return function()
   local bufnr = api.nvim_win_get_buf(winid)
   local curow = api.nvim_win_get_cursor(winid)[1]
   local nsp = vim.fn.indent(curow)
-  if nsp == 0 then error("refuse to work on top indent level") end
+  if nsp == 0 then return jelly.err("refuse to work on top indent level") end
 
   local maxrow = api.nvim_buf_line_count(bufnr)
 
@@ -46,5 +46,6 @@ return function()
   end
 
   jelly.debug("curow=%d, nsp=%d, rowrange=%d-%d", curow, nsp, toprow, botrow)
+  jumplist.push_here()
   vsel.select_lines(toprow - 1, botrow - 1 + 1)
 end

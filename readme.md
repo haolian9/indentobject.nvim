@@ -19,7 +19,7 @@ providing an indent object for neovim
 my personal keymaps
 
 ```
-m.v("ii", function() require("indentobject")() end)
+m({"x", "o"}, "ii", function() require("indentobject")() end)
 ```
 
 ## thanks
