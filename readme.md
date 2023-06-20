@@ -1,5 +1,7 @@
 providing an indent object for neovim
 
+https://user-images.githubusercontent.com/6236829/247051224-148d34c6-14af-44b2-8b81-49922e9d15a8.mp4
+
 ## design choices
 * not work on top level
 * ignore indent=0 when searching next/prev line
