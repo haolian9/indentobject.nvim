@@ -3,7 +3,6 @@
 -- * ignore indent=0 when searching next/prev line
 -- * ignore blank lines in the top and bottom of the range
 
-local cthulhu = require("cthulhu")
 local buflines = require("infra.buflines")
 local itertools = require("infra.itertools")
 local jelly = require("infra.jellyfish")("indentobject")
@@ -12,25 +11,33 @@ local ni = require("infra.ni")
 local vsel = require("infra.vsel")
 local wincursor = require("infra.wincursor")
 
+local is_empty_line
+do
+  function is_empty_line(bufnr, lnum) return buflines.partial_line(bufnr, lnum, 0, 1) == "" end
+
+  local ok, cthulhu = pcall(require, "cthulhu")
+  if ok then is_empty_line = cthulhu.nvim.is_empty_line end
+end
+
 ---@param bufnr integer
 ---@param nsp integer
 ---@param range fun():integer? @range of rows
 ---@return integer @row
 local function resolve_stop_row(bufnr, nsp, range)
-  local row
-  for i in range do
-    local insp = vim.fn.indent(i)
+  local result
+  for row in range do
+    local insp = vim.fn.indent(row)
     if insp == 0 then
-      if not cthulhu.nvim.is_empty_line(bufnr, i - 1) then break end
+      if not is_empty_line(bufnr, row - 1) then break end
       -- skip blank line
     elseif insp < nsp then
       break
     else
-      row = i
+      result = row
     end
   end
-  assert(row ~= nil)
-  return row
+  assert(result ~= nil)
+  return result
 end
 
 return function()
